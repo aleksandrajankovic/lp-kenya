@@ -293,6 +293,24 @@
       .floaty {
         animation: floaty 3.2s ease-in-out infinite;
       }
+      .scroll-arrow {
+        animation: scrollArrow 1.6s ease-in-out infinite;
+      }
+
+      @keyframes scrollArrow {
+        0% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        50% {
+          transform: translateY(10px);
+          opacity: 0.7;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
     </style>
   </head>
 
@@ -309,7 +327,7 @@
       </div>
 
       <div
-        class="relative z-10 max-w-[1440px] mx-auto px-4 pt-6 pb-[160px] md:pt-10 md:pb-28"
+        class="relative z-10 max-w-[1440px] mx-auto px-4 pt-6 pb-24 md:pt-10 md:pb-28"
       >
         <!-- centered red logo -->
         <div class="flex justify-center mb-5 md:mb-8">
@@ -444,19 +462,17 @@
     <!-- SCROLL HINT -->
     <div
       id="scrollHint"
-      class="md:hidden fixed bottom-[93px] left-0 right-0 flex justify-center pointer-events-none z-40 transition-opacity duration-300"
+      class="md:hidden fixed bottom-[98px] left-0 right-0 flex justify-center pointer-events-none z-40 transition-opacity duration-300"
     >
       <div
         class="absolute bottom-[-20px] left-0 right-0 h-32 bg-gradient-to-t from-[#050816] via-[#050816]/85 to-transparent"
       ></div>
 
-      <div
-        class="relative w-5 h-8 rounded-full border-2 border-[#ffd21c]/90 flex justify-center"
-      >
-        <div
-          class="w-1 h-2 bg-[#ffd21c] rounded-full mt-1 animate-bounce"
-        ></div>
-      </div>
+      <img
+        src="./img/strelice.png"
+        alt="Scroll down"
+        class="relative w-10 scroll-arrow"
+      />
     </div>
 
     <!-- FLOATING CTA -->
@@ -473,25 +489,31 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        // AFF PARAMS
         const params = window.location.search;
 
-        if (!params) return;
+        if (params) {
+          document.querySelectorAll(".join-now").forEach(function (btn) {
+            const baseUrl = btn.getAttribute("href").split("?")[0];
+            btn.setAttribute("href", baseUrl + params);
+          });
+        }
 
-        document.querySelectorAll(".join-now").forEach(function (btn) {
-          const baseUrl = btn.getAttribute("href").split("?")[0];
-
-          btn.setAttribute("href", baseUrl + params);
-        });
+        // SCROLL HINT
         const scrollHint = document.getElementById("scrollHint");
 
         function handleScrollHint() {
           if (!scrollHint) return;
 
-          const scrollTop = window.scrollY;
+          const scrollTop =
+            window.pageYOffset || document.documentElement.scrollTop;
           const windowHeight = window.innerHeight;
-          const docHeight = document.documentElement.scrollHeight;
+          const docHeight = Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight,
+          );
 
-          if (scrollTop + windowHeight >= docHeight - 50) {
+          if (scrollTop + windowHeight >= docHeight - 20) {
             scrollHint.style.opacity = "0";
           } else {
             scrollHint.style.opacity = "1";
@@ -499,6 +521,7 @@
         }
 
         window.addEventListener("scroll", handleScrollHint);
+        window.addEventListener("resize", handleScrollHint);
         handleScrollHint();
       });
     </script>
